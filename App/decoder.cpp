@@ -90,8 +90,6 @@ void decoder::processMessage(void)
 		printf("BEEP ");
 
 	//DECODE MAIN DISPLAY
-	printf("MAIN: ");
-
 	if ((data[1] >> 7) & 0x01)
 		printf("-");
 
@@ -101,50 +99,52 @@ void decoder::processMessage(void)
 		char temp[2];
 		temp[0] = 48 + decoder::decodeDigit(data[2 + i]);
 		temp[1] = '\0';
-		printf(temp);
+		if(temp[0] != ' ')
+			printf(temp);
 		if ((data[3 + i] & 0x01) & (i < 4))
 			printf(".");
 	}
-	printf(" ");
 
-	//DECODE UNIT PREFIX FOR MAIN DISPLAY
+	//DECODE EXPONENT FOR MAIN DISPLAY
 	if ((data[13] >> 6) & 0x01)
-		printf("n");
+		printf("E-9");
 	if ((data[14] >> 3) & 0x01)
-		printf("u");
+		printf("E-6");
 	if ((data[14] >> 2) & 0x01)
-		printf("m");
+		printf("E-3");
 	if ((data[14] >> 6) & 0x01)
-		printf("k");
+		printf("E+3");
 	if ((data[14] >> 5) & 0x01)
-		printf("M");
+		printf("E+6");
+
+	printf(" ");
 
 	//DECODE UNIT FOR MAIN DISPLAY
 	if (data[7] & 0x01)
-		printf("V ");
+		printf("V");
 	if ((data[13] >> 7) & 0x01)
-		printf("A ");
+		printf("A");
 	if ((data[13] >> 5) & 0x01)
-		printf("F ");
+		printf("F");
 	if ((data[13] >> 4) & 0x01)
-		printf("S ");
+		printf("S");
 	if ((data[14] >> 7) & 0x01)
-		printf("D%% ");
+		printf("D%%");
 	if ((data[14] >> 4) & 0x01)
-		printf("Ohm ");
+		printf("Ohm");
 	if ((data[14] >> 1) & 0x01)
-		printf("dB ");
+		printf("dB");
 	if (data[14] & 0x01)
-		printf("Hz ");
+		printf("Hz");
 
 	//DC OR AC
 	if ((data[0] >> 4) & 0x01)
-		printf("DC ");
+		printf("_DC");
 	if (data[1] & 0x01)
-		printf("AC ");
+		printf("_AC");
 
 	//DECODE AUXILIARY DISPLAY
-	printf("AUX: ");
+	printf(" ");
 
 	if ((data[8] >> 4) & 0x01)
 		printf("-");
@@ -152,21 +152,23 @@ void decoder::processMessage(void)
 	for (uint8_t i = 0; i < 4; i++)
 	{
 		char temp[] = {(char)(48 + decoder::decodeDigit(data[9 + i])), '\0'};
-		printf(temp);
+		if(temp[0] != ' ')
+			printf(temp);
 		if ((data[10 + i] & 0x01) & (i < 3))
 			printf(".");
 	}
-	printf(" ");
 
-	//DECODE UNIT PREFIX FOR AUXILIARY DISPLAY
+	//DECODE EXPONENT FOR AUXILIARY DISPLAY
 	if ((data[8] >> 1) & 0x01)
-		printf("m");
+		printf("E-3");
 	if (data[8] & 0x01)
-		printf("u");
+		printf("E-6");
 	if ((data[13] >> 1) & 0x01)
-		printf("k");
+		printf("E+3");
 	if (data[13] & 0x01)
-		printf("M");
+		printf("E+6");
+
+	printf(" ");
 
 	//DECODE UNIT FOR AUXILIARY DISPLAY
 	if ((data[13] >> 2) & 0x01)
@@ -178,16 +180,15 @@ void decoder::processMessage(void)
 	if ((data[8] >> 3) & 0x01)
 		printf("%%4-20mA");
 
-	printf(" ");
-	if ((data[13] >> 2) & 0x01)
-		printf("AC");
+	if ((data[8] >> 5) & 0x01)
+		printf("_AC");
 
 	//FINISH
 	printf("\n");
 
 	//detect low battery
-	if ((data[8] >> 7) & 0x01)
-		printf(" LOW BAT\n");
+	//if ((data[8] >> 7) & 0x01)
+	//	printf(" LOW BAT\n");
 }
 
 int8_t decoder::decodeDigit(uint8_t source)

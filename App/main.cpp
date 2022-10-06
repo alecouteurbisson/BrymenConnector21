@@ -93,7 +93,7 @@ int main()
 				case Request::REQUEST_DATA:
 					mode = Mode::STOP;
 					isReadoutRequested = true;
-					printf("Getting single sample\n");
+					//printf("Getting single sample\n");
 					break;
 				case Request::SET_RAW:
 					isSendingRawData = !isSendingRawData;
